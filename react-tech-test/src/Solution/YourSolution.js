@@ -3,7 +3,7 @@ import * as React from "react";
 
 //This is the API url to fetch from
 const API_URL = 'https://matchesfashion.com/api/products';
-//const TAX_RATE = 0.08;
+const TAX_RATE = 0.08;
 
 function YourSolution() {
   //State to store product data from API
@@ -25,7 +25,20 @@ function YourSolution() {
 
   }
 
-  console.log(items)
+  const calculateProfit = (quantity, retailPrice, cost) => {
+    let profitPerItem = retailPrice - cost
+    let profit
+    const taxMultiplier = (100 - TAX_RATE) / 100
+
+    if (quantity > 10) {
+      profit = profitPerItem * 10
+      profit += (quantity - 10) * profitPerItem * taxMultiplier
+    } else {
+      profit = profitPerItem * quantity
+    }
+
+    return profit.toFixed(2)
+  }
 
   React.useEffect(() => {
     getData()
@@ -78,6 +91,7 @@ function YourSolution() {
             <th>Quantity Sold</th>
             <th>Sold Price</th>
             <th>Cost To Business</th>
+            <th>Profit After Tax</th>
           </tr>
         </thead>
         <tbody>
@@ -88,8 +102,9 @@ function YourSolution() {
                 <td>{item.brand}</td>
                 <td>{item.name}</td>
                 <td>{item.quantitySold}</td>
-                <td>{item.soldPrice}</td>
-                <td>{item.costToBusiness}</td>
+                <td>£{item.soldPrice}</td>
+                <td>£{item.costToBusiness}</td>
+                <td>£{calculateProfit(item.quantitySold, item.soldPrice, item.costToBusiness)}</td>
               </tr>
             )
           })}
