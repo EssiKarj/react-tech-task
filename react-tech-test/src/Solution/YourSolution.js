@@ -2,10 +2,13 @@ import '../AdditionalFiles/App.css';
 import * as React from "react";
 
 //This is the API url to fetch from
-//const API_URL = 'https://matchesfashion.com/api/products';
+const API_URL = 'https://matchesfashion.com/api/products';
 //const TAX_RATE = 0.08;
 
 function YourSolution() {
+  //State to store product data from API
+  const [items, setItems] = React.useState([])
+
   //State to store page number
   const [currentPage, setCurrentPage] = React.useState(0)
 
@@ -14,6 +17,19 @@ function YourSolution() {
     firstPage: true,
     lastPage: false
   })
+
+  const getData = async () => {
+    await fetch(`${API_URL}/page=${currentPage}`)
+      .then(response => response.json())
+      .then(data => setItems(data.products))
+
+  }
+
+  console.log(items)
+
+  React.useEffect(() => {
+    getData()
+  }, [currentPage])
 
   //Function that handles first page
   const handleFirstPage = () => {
@@ -65,6 +81,18 @@ function YourSolution() {
           </tr>
         </thead>
         <tbody>
+          {items.map((item) => {
+            return (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.brand}</td>
+                <td>{item.name}</td>
+                <td>{item.quantitySold}</td>
+                <td>{item.soldPrice}</td>
+                <td>{item.costToBusiness}</td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
       <button
