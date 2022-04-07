@@ -26,7 +26,6 @@ function YourSolution() {
     setDisableButton({ firstPage: false, lastPage: true })
   }
 
-
   //Function that handles changing pages
   const handlePageChange = (e) => {
 
