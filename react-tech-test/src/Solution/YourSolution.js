@@ -6,18 +6,21 @@ const API_URL = 'https://matchesfashion.com/api/products';
 const TAX_RATE = 0.08;
 
 function YourSolution() {
-  //State to store product data from API
+  //State that stores products array from API
   const [items, setItems] = React.useState([])
 
-  //State to store page number
+  //State that stores current page number
   const [currentPage, setCurrentPage] = React.useState(0)
 
-  //State to store booleans to diable buttons
+  //State that stores booleans to diable buttons
   const [disableButton, setDisableButton] = React.useState({
     firstPage: true,
     lastPage: false
   })
 
+  //Function that uses fetch to get data from API
+  //Converts response from API to a JSON format
+  //Stores products array from data object to a state
   const getData = async () => {
     await fetch(`${API_URL}/page=${currentPage}`)
       .then(response => response.json())
@@ -25,10 +28,12 @@ function YourSolution() {
 
   }
 
+  //Function that calculates profit for each product order that also subtracts 0.08% tax from orders after 10 items.
+  //Returns profit value with 2 decimals --- e.g. 24.234539 ~ 24.23
   const calculateProfit = (quantity, retailPrice, cost) => {
     let profitPerItem = retailPrice - cost
     let profit
-    const taxMultiplier = (100 - TAX_RATE) / 100
+    const taxMultiplier = 1 - TAX_RATE
 
     if (quantity > 10) {
       profit = profitPerItem * 10
@@ -40,30 +45,35 @@ function YourSolution() {
     return profit.toFixed(2)
   }
 
+  //useEffect that executes getData function each time currentPage state is updated
   React.useEffect(() => {
     getData()
   }, [currentPage])
 
-  //Function that handles first page
+  //Function that sets currentPage to first page and disables buttons for Previous and First
   const handleFirstPage = () => {
     setCurrentPage(0)
     setDisableButton({ firstPage: true, lastPage: false })
   }
-  //Function that handles last page
+  //Function that sets currentPage to last page and diables buttons for Next and Last
   const handleLastPage = () => {
     setCurrentPage(4)
     setDisableButton({ firstPage: false, lastPage: true })
   }
 
-  //Function that handles changing pages
+  //Function that handles changing of pages which is attached to click event on each button
   const handlePageChange = (e) => {
 
+    //Conditions that check if the button clicked is First or Last and if true executes handleFirstPage or handleLastPage function
     if (e.target.value === 'first') {
       handleFirstPage()
     } else if (e.target.value === 'last') {
       handleLastPage()
     }
 
+    //Conditions that handle Previous button click events
+    //First condition to check if the current page index is 1 which if true executes handleFirstPage function
+    //Second condition to handle page changes between page index 1 and 4 by setting currentPage value decreased by one and setting disableButton state's values to false
     if (e.target.value === 'previous' && currentPage === 1) {
       handleFirstPage()
     } else if (e.target.value === 'previous') {
@@ -71,6 +81,10 @@ function YourSolution() {
       setDisableButton({ firstPage: false, lastPage: false })
     }
 
+
+    //Conditions that handle Next button click events
+    //First condition to check if the current page index is 3 which if true executes handleLastPage function
+    //Second condition to handle page changes between page index 0 and 3 by setting currentPage value increased by one and setting disableButton state's values to false
     if (e.target.value === 'next' && currentPage === 3) {
       handleLastPage()
     } else if (e.target.value === 'next') {
