@@ -12,7 +12,7 @@ function YourSolution() {
   //State that stores current page number
   const [currentPage, setCurrentPage] = React.useState(0)
 
-  //State that stores booleans to diable buttons
+  //State that stores booleans to disable buttons
   const [disableButton, setDisableButton] = React.useState({
     firstPage: true,
     lastPage: false
@@ -20,7 +20,7 @@ function YourSolution() {
 
   //Function that uses fetch to get data from API
   //Converts response from API to a JSON format
-  //Stores products array from data object to a state
+  //Stores products array from data object to items state
   const getData = async () => {
     await fetch(`${API_URL}/page=${currentPage}`)
       .then(response => response.json())
@@ -50,21 +50,21 @@ function YourSolution() {
     getData()
   }, [currentPage])
 
-  //Function that sets currentPage to first page and disables buttons for Previous and First
+  //Function that sets currentPage to first page and sets disableButton state's firstPage value to true
   const handleFirstPage = () => {
     setCurrentPage(0)
     setDisableButton({ firstPage: true, lastPage: false })
   }
-  //Function that sets currentPage to last page and diables buttons for Next and Last
+  //Function that sets currentPage to last page and sets disableButton state's lastPage value to true
   const handleLastPage = () => {
     setCurrentPage(4)
     setDisableButton({ firstPage: false, lastPage: true })
   }
 
-  //Function that handles changing of pages which is attached to click event on each button
+  //Function that handles changing of pages that is attached to click event on each button
   const handlePageChange = (e) => {
 
-    //Conditions that check if the button clicked is First or Last and if true executes handleFirstPage or handleLastPage function
+    //Conditions that check if the button clicked is First or Last and if true, executes handleFirstPage or handleLastPage function
     if (e.target.value === 'first') {
       handleFirstPage()
     } else if (e.target.value === 'last') {
@@ -72,7 +72,7 @@ function YourSolution() {
     }
 
     //Conditions that handle Previous button click events
-    //First condition to check if the current page index is 1 which if true executes handleFirstPage function
+    //First condition to check if the current page index is 1 which if true, executes handleFirstPage function
     //Second condition to handle page changes between page index 1 and 4 by setting currentPage value decreased by one and setting disableButton state's values to false
     if (e.target.value === 'previous' && currentPage === 1) {
       handleFirstPage()
@@ -83,7 +83,7 @@ function YourSolution() {
 
 
     //Conditions that handle Next button click events
-    //First condition to check if the current page index is 3 which if true executes handleLastPage function
+    //First condition to check if the current page index is 3 which if true, executes handleLastPage function
     //Second condition to handle page changes between page index 0 and 3 by setting currentPage value increased by one and setting disableButton state's values to false
     if (e.target.value === 'next' && currentPage === 3) {
       handleLastPage()
