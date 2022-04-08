@@ -6,6 +6,8 @@ const API_URL = 'https://matchesfashion.com/api/products';
 const TAX_RATE = 0.08;
 
 function YourSolution() {
+  //Variable to store international number formatter
+  const internationalNumberFormat = new Intl.NumberFormat('en-US')
   //State that stores products array from API
   const [items, setItems] = React.useState([])
 
@@ -29,7 +31,7 @@ function YourSolution() {
   }
 
   //Function that calculates profit for each product order that also subtracts 0.08% tax from orders after 10 items.
-  //Returns profit value with 2 decimals --- e.g. 24.234539 ~ 24.23
+  //Returns profit value with 2 decimals in international number format (e.g. 1924.234539 ~ 1,924.23)
   const calculateProfit = (quantity, retailPrice, cost) => {
     let profitPerItem = retailPrice - cost
     let profit
@@ -42,7 +44,7 @@ function YourSolution() {
       profit = profitPerItem * quantity
     }
 
-    return profit.toFixed(2)
+    return internationalNumberFormat.format(profit.toFixed(2))
   }
 
   //useEffect that executes getData function each time currentPage state is updated
@@ -115,9 +117,9 @@ function YourSolution() {
                 <td>{item.id}</td>
                 <td>{item.brand}</td>
                 <td>{item.name}</td>
-                <td>{item.quantitySold}</td>
-                <td>£{item.soldPrice}</td>
-                <td>£{item.costToBusiness}</td>
+                <td>{internationalNumberFormat.format(item.quantitySold)}</td>
+                <td>£{internationalNumberFormat.format(item.soldPrice)}</td>
+                <td>£{internationalNumberFormat.format(item.costToBusiness)}</td>
                 <td>£{calculateProfit(item.quantitySold, item.soldPrice, item.costToBusiness)}</td>
               </tr>
             )
