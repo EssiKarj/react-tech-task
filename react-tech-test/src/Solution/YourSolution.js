@@ -5,9 +5,28 @@ import * as React from "react";
 const API_URL = 'https://matchesfashion.com/api/products';
 const TAX_RATE = 0.08;
 
+//Variable to store international number formatter
+const internationalNumberFormat = new Intl.NumberFormat('en-US')
+
+//Function that calculates profit for each product order that also subtracts 0.08% tax from orders after 10 items.
+//Returns profit value with 2 decimals in international number format (e.g. 1924.234539 ~ 1,924.23)
+export const calculateProfit = (quantity, retailPrice, cost) => {
+  let profitPerItem = retailPrice - cost
+  let profit
+  const taxMultiplier = 1 - TAX_RATE
+
+  if (quantity > 10) {
+    profit = profitPerItem * 10
+    profit += (quantity - 10) * profitPerItem * taxMultiplier
+  } else {
+    profit = profitPerItem * quantity
+  }
+
+  return internationalNumberFormat.format(profit.toFixed(2))
+}
+
 function YourSolution() {
-  //Variable to store international number formatter
-  const internationalNumberFormat = new Intl.NumberFormat('en-US')
+
   //State that stores products array from API
   const [items, setItems] = React.useState([])
 
@@ -20,35 +39,18 @@ function YourSolution() {
     lastPage: false
   })
 
-  //Function that uses fetch to get data from API
-  //Converts response from API to a JSON format
-  //Stores products array from data object to items state
-  const getData = async () => {
-    await fetch(`${API_URL}/page=${currentPage}`)
-      .then(response => response.json())
-      .then(data => setItems(data.products))
-
-  }
-
-  //Function that calculates profit for each product order that also subtracts 0.08% tax from orders after 10 items.
-  //Returns profit value with 2 decimals in international number format (e.g. 1924.234539 ~ 1,924.23)
-  const calculateProfit = (quantity, retailPrice, cost) => {
-    let profitPerItem = retailPrice - cost
-    let profit
-    const taxMultiplier = 1 - TAX_RATE
-
-    if (quantity > 10) {
-      profit = profitPerItem * 10
-      profit += (quantity - 10) * profitPerItem * taxMultiplier
-    } else {
-      profit = profitPerItem * quantity
-    }
-
-    return internationalNumberFormat.format(profit.toFixed(2))
-  }
-
   //useEffect that executes getData function each time currentPage state is updated
   React.useEffect(() => {
+
+    //Function that uses fetch to get data from API
+    //Converts response from API to a JSON format
+    //Stores products array from data object to items state
+    const getData = async () => {
+      await fetch(`${API_URL}/page=${currentPage}`)
+        .then(response => response.json())
+        .then(data => setItems(data.products))
+    }
+
     getData()
   }, [currentPage])
 
@@ -69,8 +71,12 @@ function YourSolution() {
     //Conditions that check if the button clicked is First or Last and if true, executes handleFirstPage or handleLastPage function
     if (e.target.value === 'first') {
       handleFirstPage()
-    } else if (e.target.value === 'last') {
+      return
+    }
+
+    if (e.target.value === 'last') {
       handleLastPage()
+      return
     }
 
     //Conditions that handle Previous button click events
@@ -78,22 +84,28 @@ function YourSolution() {
     //Second condition to handle page changes between page index 1 and 4 by setting currentPage value decreased by one and setting disableButton state's values to false
     if (e.target.value === 'previous' && currentPage === 1) {
       handleFirstPage()
-    } else if (e.target.value === 'previous') {
-      setCurrentPage(currentPage - 1)
-      setDisableButton({ firstPage: false, lastPage: false })
+      return
     }
 
+    if (e.target.value === 'previous') {
+      setCurrentPage(currentPage - 1)
+      setDisableButton({ firstPage: false, lastPage: false })
+      return
+    }
 
     //Conditions that handle Next button click events
     //First condition to check if the current page index is 3 which if true, executes handleLastPage function
     //Second condition to handle page changes between page index 0 and 3 by setting currentPage value increased by one and setting disableButton state's values to false
     if (e.target.value === 'next' && currentPage === 3) {
       handleLastPage()
-    } else if (e.target.value === 'next') {
-      setCurrentPage(currentPage + 1)
-      setDisableButton({ firstPage: false, lastPage: false })
+      return
     }
 
+    if (e.target.value === 'next') {
+      setCurrentPage(currentPage + 1)
+      setDisableButton({ firstPage: false, lastPage: false })
+      return
+    }
   }
 
   return (
@@ -129,14 +141,14 @@ function YourSolution() {
       <button
         value='first'
         disabled={disableButton.firstPage}
-        onClick={(e) => handlePageChange(e)}>
+        onClick={handlePageChange}>
         First Page
       </button>
 
       <button
         value='previous'
         disabled={disableButton.firstPage}
-        onClick={(e) => handlePageChange(e)}>
+        onClick={handlePageChange}>
         Previous Page
       </button>
 
@@ -145,14 +157,14 @@ function YourSolution() {
       <button
         value='next'
         disabled={disableButton.lastPage}
-        onClick={(e) => handlePageChange(e)}>
+        onClick={handlePageChange}>
         Next Page
       </button>
 
       <button
         value='last'
         disabled={disableButton.lastPage}
-        onClick={(e) => handlePageChange(e)}>
+        onClick={handlePageChange}>
         Last Page
       </button>
     </div>
